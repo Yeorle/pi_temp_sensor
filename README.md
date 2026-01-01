@@ -31,7 +31,7 @@ Connect the DHT22 sensor to the Raspberry Pi:
 ## 💿 Installation
 
 1. **Clone or Copy the Code**
-   Download this project to your Raspberry Pi, preferably at `/home/pi/pi_temperature`.
+   Download this project to your Raspberry Pi, preferably at `/home/pi/pi_temp_sensor`.
 
 2. **Install System Dependencies**
    The Adafruit DHT library requires `libgpiod2` and `python3-pip`.
@@ -71,7 +71,7 @@ python3 app.py
 ### Method 2: Systemd Service (Auto-start on Boot)
 
 1. **Edit the Service Files**
-   Check `sensor-logger.service` and `sensor-web.service` to ensure the paths match your installation (default assumes `/home/pi/pi_temperature`).
+   Check `sensor-logger.service` and `sensor-web.service` to ensure the paths match your installation (default assumes `/home/pi/pi_temp_sensor`).
 
 2. **Install Services**
    ```bash

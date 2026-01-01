@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=pi
-WorkingDirectory=/home/pi/pi_temperature
-ExecStart=/usr/bin/python3 /home/pi/pi_temperature/app.py
+WorkingDirectory=/home/pi/pi_temp_sensor
+ExecStart=/usr/bin/python3 /home/pi/pi_temp_sensor/app.py
 Restart=always
 RestartSec=10
 Environment=PYTHONUNBUFFERED=1
