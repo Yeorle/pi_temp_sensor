@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tempCtx = document.getElementById('tempChart').getContext('2d');
     const humidityCtx = document.getElementById('humidityChart').getContext('2d');
+    const rangeSelect = document.getElementById('time-range');
 
     // Chart Configuration
     const commonOptions = {
@@ -13,6 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         scales: {
             x: {
+                type: 'time',
+                time: {
+                    unit: 'hour'
+                },
                 grid: {
                     color: '#334155'
                 },
@@ -38,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempChart = new Chart(tempCtx, {
         type: 'line',
         data: {
-            labels: [],
             datasets: [{
                 label: 'Temperature (°C)',
                 borderColor: '#ef4444',
@@ -55,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Temperature History (24h)',
+                    text: 'Temperature History',
                     color: '#f8fafc'
                 }
             },
@@ -73,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const humidityChart = new Chart(humidityCtx, {
         type: 'line',
         data: {
-            labels: [],
             datasets: [{
                 label: 'Humidity (%)',
                 borderColor: '#3b82f6',
@@ -90,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Humidity History (24h)',
+                    text: 'Humidity History',
                     color: '#f8fafc'
                 }
             },
@@ -106,30 +109,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     async function fetchData() {
+        const hours = rangeSelect.value;
         try {
-            const response = await fetch('/api/data');
+            const response = await fetch(`/api/data?hours=${hours}`);
             const data = await response.json();
 
-            // Update Charts
-            // To make the x-axis cleaner, we might want to format timestamp or pick every Nth label
-            // For now, we just pass the timestamp string from DB.
+            // Prepare data for Chart.js time scale (x: timestamp, y: value)
+            const tempData = data.timestamps.map((ts, i) => ({
+                x: ts,
+                y: data.temperatures[i]
+            }));
 
-            // Format timestamps to be shorter (HH:MM)
-            const formattedLabels = data.timestamps.map(ts => {
-                const date = new Date(ts);
-                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            });
+            const humidityData = data.timestamps.map((ts, i) => ({
+                x: ts,
+                y: data.humidities[i]
+            }));
 
-            tempChart.data.labels = formattedLabels;
-            tempChart.data.datasets[0].data = data.temperatures;
+            // Adjust X-axis time unit based on range
+            let timeUnit = 'hour';
+            if (hours <= 6) timeUnit = 'minute';
+            else if (hours <= 24) timeUnit = 'hour';
+            else timeUnit = 'day';
+
+            tempChart.options.scales.x.time.unit = timeUnit;
+            humidityChart.options.scales.x.time.unit = timeUnit;
+
+            tempChart.data.datasets[0].data = tempData;
             tempChart.update();
 
-            humidityChart.data.labels = formattedLabels;
-            humidityChart.data.datasets[0].data = data.humidities;
+            humidityChart.data.datasets[0].data = humidityData;
             humidityChart.update();
 
             // Update Current Values (Latest reading)
             if (data.temperatures.length > 0) {
+                // Determine latest reading (data is ordered oldest to newest in JS arrays)
                 const lastTemp = data.temperatures[data.temperatures.length - 1];
                 const lastHum = data.humidities[data.humidities.length - 1];
                 document.getElementById('current-temp').innerText = `${lastTemp.toFixed(1)}°C`;
@@ -140,6 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error fetching data:", error);
         }
     }
+
+    // Event listener for range change
+    rangeSelect.addEventListener('change', fetchData);
 
     // Initial Fetch
     fetchData();

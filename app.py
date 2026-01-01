@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import database
 import datetime
 
@@ -10,8 +10,11 @@ def index():
 
 @app.route('/api/data')
 def get_data():
-    # Return last 24h of data (1440 minutes)
-    readings = database.get_data(limit=1440)
+    # Get hours from query string, default to 24
+    hours = request.args.get('hours', default=24, type=int)
+
+    # Return readings for the requested range
+    readings = database.get_data(hours=hours)
     
     # Format for chart.js: lists of labels (timestamps) and data points
     # We'll return the raw list and let JS handle formatting, 

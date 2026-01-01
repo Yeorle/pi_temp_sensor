@@ -6,12 +6,25 @@
     <title>Pi Weather Station</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Pi Weather Station</h1>
-            <p>Live Temperature & Humidity Monitor</p>
+            <div class="header-content">
+                <div>
+                    <h1>Pi Weather Station</h1>
+                    <p>Live Temperature & Humidity Monitor</p>
+                </div>
+                <div class="controls">
+                    <select id="time-range">
+                        <option value="6">Last 6 Hours</option>
+                        <option value="12">Last 12 Hours</option>
+                        <option value="24" selected>Last 24 Hours</option>
+                        <option value="168">Last 7 Days</option>
+                    </select>
+                </div>
+            </div>
         </header>
         
         <div class="cards">

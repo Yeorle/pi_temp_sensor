@@ -24,12 +24,16 @@ def log_data(temperature, humidity):
     conn.commit()
     conn.close()
 
-def get_data(limit=1440): # Default to last 24h (1440 mins)
-    """Retrieves the last N readings."""
+def get_data(hours=24): 
+    """Retrieves readings from the last N hours."""
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute("SELECT * FROM readings ORDER BY timestamp DESC LIMIT ?", (limit,))
+    
+    # Calculate cutoff time
+    cutoff = datetime.datetime.now() - datetime.timedelta(hours=hours)
+    
+    c.execute("SELECT * FROM readings WHERE timestamp > ? ORDER BY timestamp DESC", (cutoff,))
     rows = c.fetchall()
     conn.close()
     return [dict(row) for row in rows]
