@@ -34,10 +34,10 @@ Connect the DHT22 sensor to the Raspberry Pi:
    Download this project to your Raspberry Pi, preferably at `/home/pi/pi_temp_sensor`.
 
 2. **Install System Dependencies**
-   The Adafruit DHT library requires `libgpiod2` and `python3-pip`.
+   The Adafruit DHT library requires `libgpiod3` and `python3-pip`.
    ```bash
    sudo apt-get update
-   sudo apt-get install -y python3-pip libgpiod2
+   sudo apt-get install -y python3-pip libgpiod3
    ```
 
 3. **Install Python Dependencies**
